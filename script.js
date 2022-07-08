@@ -2,7 +2,7 @@
 
 const btn = document.querySelector('.btn-country');
 const countriesContainer = document.querySelector('.countries');
-
+const form = document.querySelector('.form');
 ///////////////////////////////////////
 
 const renderCountry = function (data, className = '') {
@@ -28,38 +28,45 @@ const renderCountry = function (data, className = '') {
   countriesContainer.style.opacity = 1;
 };
 
-const getCountryAndNeighbour = function (country) {
-  //AJAX call country 1
-  const request = new XMLHttpRequest();
-  request.open('GET', `https://restcountries.com/v3.1/name/${country}`);
-  request.send();
-
-  request.addEventListener('load', function () {
-    const [data] = JSON.parse(this.responseText);
-
-    //render country 1
-    renderCountry(data);
-
-    //get neighbour country (2)
-    const neighbour = data.borders?.[0];
-    if (!neighbour) return;
-
-    //AJAX call country country 2
-    const request2 = new XMLHttpRequest();
-    request2.open('GET', `https://restcountries.com/v3.1/alpha/${neighbour}`);
-    request2.send();
-
-    request2.addEventListener('load', function () {
-      const [data2] = JSON.parse(this.responseText);
-      renderCountry(data2, 'neighbour');
-    });
-  });
+const renderError = function (msg) {
+  countriesContainer.insertAdjacentText('beforeend', msg);
+  countriesContainer.style.opacity = 1;
+  btn.style.display = 'none';
 };
 
+const getJSON = function (url, errorMsg = 'Something went wrong') {
+  return fetch(url).then(response => {
+    if (!response.ok) throw new Error(`${errorMsg} (${response.status})`);
+    return response.json();
+  });
+};
+const getCountryAndNeighbour = function (country) {
+  //AJAX call country 1
+
+  getJSON(`https://restcountries.com/v3.1/name/${country}`, 'Country not found')
+    .then(([data]) => {
+      renderCountry(data);
+      const neighbour = data?.borders[0];
+      if (!neighbour) throw new Error('No neighbour country !');
+      //AJAX call country 2
+      return getJSON(
+        `https://restcountries.com/v3.1/alpha/${neighbour}`,
+        'Country not found'
+      );
+    })
+    .then(([data]) => renderCountry(data, 'neighbour'))
+    .catch(err => renderError(`ERROR ${err.message} 😀 `));
+};
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  countriesContainer.innerHTML='';
+  getCountryAndNeighbour(btn.value);
+  btn.value = '';
+});
+
 // getCountryAndNeighbour('usa');
-getCountryAndNeighbour('morocco');
+// getCountryAndNeighbour('senegal');
 // getCountryAndNeighbour('france');
 // getCountryAndNeighbour('iraq');
 // getCountryAndNeighbour('senegal');
-
-

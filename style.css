@@ -1,3 +1,4 @@
+
 * {
   margin: 0;
   padding: 0;
@@ -62,7 +63,7 @@ body {
 
 .neighbour {
   transform: scale(0.8) translateY(1rem);
-  margin-left: 0;
+  margin-left: 40px;
 }
 
 .country__img {
@@ -105,10 +106,12 @@ body {
   font-size: 2rem;
   padding: 2rem 5rem;
   border-radius: 0.7rem;
-  color: white;
-  background-color: orangered;
-  cursor: pointer;
+  /* color: white; */
+  /* background-color: orangered; */
+  /* cursor: pointer; */
 }
+
+
 
 .images {
   display: flex;
@@ -126,3 +129,14 @@ body {
   border: 3rem solid white;
   box-shadow: 0 2rem 5rem 1rem rgba(0, 0, 0, 0.1);
 }
+
+@media only screen and (max-width: 400px) {
+  .btn-country {
+    margin-left: 60px;
+    margin-bottom: 20px;
+    width: 75%;
+    font-size: 15px;
+    padding: 2rem 3rem;
+  }
+}
+
